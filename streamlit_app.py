@@ -53,7 +53,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # React to user input
-if user_input := st.chat_input("Info apa yang ingin anda ketahui tentang Kuria GKPS Cikoko?"):
+if user_input := st.chat_input("Hal apa yang ingin ditanyakan?"):
     # Display user message in chat message container
     st.chat_message("user").markdown(user_input)
     # Add user message to chat history
