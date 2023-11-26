@@ -6,23 +6,43 @@ import datetime
 import dateparser  # For advanced date interpretation
 import re  # For regular expressions
 
+# Function to get the current time
+def get_current_time():
+    return datetime.datetime.now().strftime("%H:%M:%S")
+
 # Function to interpret date phrases using dateparser
 def interpret_date_phrase(phrase):
     # Use dateparser to interpret the phrase
-    interpreted_date = dateparser.parse(phrase, settings={'PREFER_DATES_FROM': 'future'})
-    return interpreted_date
+    current_date = datetime.datetime.now()
+    if phrase in ["this morning", "pagi ini"]:
+        return current_date.replace(hour=9, minute=0, second=0, microsecond=0)
+    elif phrase in ["this noon", "siang ini"]:
+        return current_date.replace(hour=12, minute=0, second=0, microsecond=0)
+    else:
+        interpreted_date = dateparser.parse(phrase, settings={'PREFER_DATES_FROM': 'future'})
+        return interpreted_date
 
 # Function to interact with OpenAI API
 def interact_with_openai(user_message):
     try:
-        # Extract potential date-related phrases using regex (you can adjust this as needed)
-        date_phrases = re.findall(r"\b(besok|kemarin|minggu ini|minggu depan|hari ini)\b", user_message, re.IGNORECASE)
+        time_related_responses = {
+            "what time is it": get_current_time(),
+            "jam berapa sekarang": get_current_time()
+        }
+
+        # Check if the user message is a time-related query
+        for query, response in time_related_responses.items():
+            if query in user_message.lower():
+                return [response]
+
+        # Extract potential date-related phrases using regex
+        date_phrases = re.findall(r"\b(besok|kemarin|minggu ini|minggu depan|hari ini|pagi ini|siang ini)\b", user_message, re.IGNORECASE)
         date_info = ""
         if date_phrases:
             # Interpret the first date phrase found
             relevant_date = interpret_date_phrase(date_phrases[0])
             if relevant_date:
-                date_info = f" (Interpreted date: {relevant_date.strftime('%Y-%m-%d')})"
+                date_info = f" (Interpreted date: {relevant_date.strftime('%Y-%m-%d %H:%M:%S')})"
 
         # Include the date information in the query to OpenAI
         user_message = "Respond in Indonesian: " + user_message + date_info
