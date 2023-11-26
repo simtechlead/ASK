@@ -2,53 +2,19 @@ import streamlit as st
 import os
 import time
 from openai import OpenAI
-import datetime
-import pytz
-import dateparser  # For advanced date interpretation
-import re  # For regular expressions
 
-# Function to get the current time in Jakarta timezone
-def get_current_time():
-    jakarta_timezone = pytz.timezone("Asia/Jakarta")
-    jakarta_time = datetime.datetime.now(jakarta_timezone)
-    return jakarta_time.strftime("%H:%M:%S")
+# Set up the page configuration and title
+st.set_page_config(page_title="ASK")
+st.title('Asisten Kuria GKPS Cikoko')
 
-# Function to interpret date phrases using dateparser
-def interpret_date_phrase(phrase):
-    # Use dateparser to interpret the phrase
-    current_date = datetime.datetime.now()
-    if phrase in ["this morning", "pagi ini"]:
-        return current_date.replace(hour=9, minute=0, second=0, microsecond=0)
-    elif phrase in ["this noon", "siang ini"]:
-        return current_date.replace(hour=12, minute=0, second=0, microsecond=0)
-    else:
-        interpreted_date = dateparser.parse(phrase, settings={'PREFER_DATES_FROM': 'future'})
-        return interpreted_date
+# Add user guide
+st.info("""Masukkan pertanyaan di kolom chat""")
 
 # Function to interact with OpenAI API
 def interact_with_openai(user_message):
     try:
-        time_related_responses = {
-            "what time is it": get_current_time(),
-            "jam berapa sekarang": get_current_time()
-        }
-
-        # Check if the user message is a time-related query
-        for query, response in time_related_responses.items():
-            if query in user_message.lower():
-                return [response]
-
-        # Extract potential date-related phrases using regex
-        date_phrases = re.findall(r"\b(besok|kemarin|minggu ini|minggu depan|hari ini|pagi ini|siang ini)\b", user_message, re.IGNORECASE)
-        date_info = ""
-        if date_phrases:
-            # Interpret the first date phrase found
-            relevant_date = interpret_date_phrase(date_phrases[0])
-            if relevant_date:
-                date_info = f" (Interpreted date: {relevant_date.strftime('%Y-%m-%d %H:%M:%S')})"
-
-        # Include the date information in the query to OpenAI
-        user_message = "Respond in Indonesian: " + user_message + date_info
+        # Prepend a directive to respond in Indonesian
+        user_message = "Respond in Indonesian: " + user_message
         
         openai_key = os.environ['OPENAI_KEY']
         org_ID = os.environ['ORG_ID']
@@ -76,13 +42,6 @@ def interact_with_openai(user_message):
     except Exception as e:
         st.error(f"Error: {e}")
         return []
-
-# Set up the page configuration and title
-st.set_page_config(page_title="ASK")
-st.title('Asisten Kuria GKPS Cikoko')
-
-# Add user guide
-st.info("Masukkan pertanyaan di kolom chat")
 
 # Initialize chat history
 if "messages" not in st.session_state:
