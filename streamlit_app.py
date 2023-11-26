@@ -3,12 +3,15 @@ import os
 import time
 from openai import OpenAI
 import datetime
+import pytz
 import dateparser  # For advanced date interpretation
 import re  # For regular expressions
 
-# Function to get the current time
+# Function to get the current time in Jakarta timezone
 def get_current_time():
-    return datetime.datetime.now().strftime("%H:%M:%S")
+    jakarta_timezone = pytz.timezone("Asia/Jakarta")
+    jakarta_time = datetime.datetime.now(jakarta_timezone)
+    return jakarta_time.strftime("%H:%M:%S")
 
 # Function to interpret date phrases using dateparser
 def interpret_date_phrase(phrase):
