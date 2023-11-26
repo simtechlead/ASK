@@ -3,7 +3,56 @@ import os
 import time
 from openai import OpenAI
 import datetime
+import dateparser  # For advanced date interpretation
 import re  # For regular expressions
+
+# Function to interpret date phrases using dateparser
+def interpret_date_phrase(phrase):
+    # Use dateparser to interpret the phrase
+    interpreted_date = dateparser.parse(phrase, settings={'PREFER_DATES_FROM': 'future'})
+    return interpreted_date
+
+# Function to interact with OpenAI API
+def interact_with_openai(user_message):
+    try:
+        # Extract potential date-related phrases using regex (you can adjust this as needed)
+        date_phrases = re.findall(r"\b(besok|kemarin|minggu ini|minggu depan|hari ini)\b", user_message, re.IGNORECASE)
+        date_info = ""
+        if date_phrases:
+            # Interpret the first date phrase found
+            relevant_date = interpret_date_phrase(date_phrases[0])
+            if relevant_date:
+                date_info = f" (Interpreted date: {relevant_date.strftime('%Y-%m-%d')})"
+
+        # Include the date information in the query to OpenAI
+        user_message = "Respond in Indonesian: " + user_message + date_info
+        
+        openai_key = os.environ['OPENAI_KEY']
+        org_ID = os.environ['ORG_ID']
+
+        client = OpenAI(organization=org_ID, api_key=openai_key)
+        assistant = client.beta.assistants.retrieve("asst_kehD6QVaQfE8FFSf3Yfyaj0l")
+        thread = client.beta.threads.create()
+        message = client.beta.threads.messages.create(thread_id=thread.id, role="user", content=user_message)
+        run = client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
+
+        while True:
+            run_status = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
+            if run_status.status == 'completed':
+                break
+            else:
+                time.sleep(1)
+
+        messages = client.beta.threads.messages.list(thread_id=thread.id)
+        responses = []
+        for each in messages:
+            if each.role == 'assistant':
+                responses.append(each.content[0].text.value if isinstance(each.content, list) and hasattr(each.content[0], 'text') else str(each.content))
+        return responses
+
+    except Exception as e:
+        st.error(f"Error: {e}")
+        return []
 
 # Set up the page configuration and title
 st.set_page_config(page_title="ASK")
@@ -11,41 +60,6 @@ st.title('Asisten Kuria GKPS Cikoko')
 
 # Add user guide
 st.info("Masukkan pertanyaan di kolom chat")
-
-# Function to interpret date phrases
-def interpret_date_phrase(phrase):
-    current_date = datetime.datetime.now()
-    if phrase == "besok":
-        return current_date + datetime.timedelta(days=1)
-    elif phrase == "kemarin":
-        return current_date - datetime.timedelta(days=1)
-    elif phrase == "minggu depan":
-        return current_date + datetime.timedelta(weeks=1)
-    # Add more interpretations as needed
-    return current_date  # Default to current date if no match
-
-# Function to interact with OpenAI API
-def interact_with_openai(user_message):
-    try:
-        # Extract date-related phrases from user_message using regex or string analysis
-        date_phrases = re.findall(r"besok|kemarin|minggu depan", user_message)
-        if date_phrases:
-            # Interpret the first date phrase found
-            relevant_date = interpret_date_phrase(date_phrases[0])
-            # Modify user_message or fetch document based on relevant_date
-            # For example, append the date to the message
-            user_message += f" (Tanggal yang dimaksud: {relevant_date.strftime('%Y-%m-%d')})"
-
-        # Prepend a directive to respond in Indonesian
-        user_message = "Respond in Indonesian: " + user_message
-        
-        # [Rest of your existing code for interacting with OpenAI API]
-
-        return responses
-
-    except Exception as e:
-        st.error(f"Error: {e}")
-        return []
 
 # Initialize chat history
 if "messages" not in st.session_state:
