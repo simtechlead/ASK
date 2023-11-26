@@ -1,23 +1,18 @@
 import streamlit as st
 import os
 import time
-from datetime import datetime
 from openai import OpenAI
 
 # Set up the page configuration and title
 st.set_page_config(page_title="ASK")
-st.title('Asisten Sekretaris Kuria')
+st.title('Asisten Kuria GKPS Cikoko')
 
-# User guide
+# Add user guide
 st.info("""Masukkan pertanyaan di kolom chat""")
 
 # Function to interact with OpenAI API
 def interact_with_openai(user_message):
     try:
-        # Append real-time date and time
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        user_message = f"{user_message} (Asked on {current_time})"
-        
         # Prepend a directive to respond in Indonesian
         user_message = "Respond in Indonesian: " + user_message
         
@@ -25,7 +20,6 @@ def interact_with_openai(user_message):
         org_ID = os.environ['ORG_ID']
 
         client = OpenAI(organization=org_ID, api_key=openai_key)
-        # Updated assistant ID
         assistant = client.beta.assistants.retrieve("asst_kehD6QVaQfE8FFSf3Yfyaj0l")
         thread = client.beta.threads.create()
         message = client.beta.threads.messages.create(thread_id=thread.id, role="user", content=user_message)
@@ -59,7 +53,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # React to user input
-if user_input := st.chat_input("Pertanyaan:"):
+if user_input := st.chat_input("Info apa yang ingin anda ketahui tentang Kuria GKPS Cikoko?"):
     # Display user message in chat message container
     st.chat_message("user").markdown(user_input)
     # Add user message to chat history
