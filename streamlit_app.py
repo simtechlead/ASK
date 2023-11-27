@@ -4,34 +4,11 @@ import time
 from openai import OpenAI
 
 # Set up the page configuration and title
-# This must be the first Streamlit function called
 st.set_page_config(page_title="ASK")
 st.title('Asisten Kuria GKPS Cikoko')
 
-# Include the CSS styles in your Streamlit app
-st.markdown("""
-<style>
-/* Apply a background color to the whole page */
-body {
-    background-color: #ECE5DD; /* WhatsApp-like background color */
-}
-
-/* Style chat messages in Streamlit (You may need to inspect the actual Streamlit elements and adjust selectors accordingly) */
-/* Add your adjusted selectors and styles here */
-
-/* Style for the chat message input box */
-/* Add styles here if needed */
-
-/* Style for the send button */
-button {
-    border-radius: 50%; /* Rounded corners for buttons, resembling WhatsApp's send button */
-    background-color: #25D366; /* WhatsApp-like green color */
-}
-</style>
-""", unsafe_allow_html=True)
-
 # Add user guide
-st.info("Masukkan pertanyaan di kolom chat")
+st.info("""Masukkan pertanyaan di kolom chat""")
 
 # Function to interact with OpenAI API
 def interact_with_openai(user_message):
@@ -39,11 +16,11 @@ def interact_with_openai(user_message):
         # Prepend a directive to respond in Indonesian
         user_message = "Respond in Indonesian: " + user_message
         
-        openai_key = os.getenv('OPENAI_KEY')
-        org_ID = os.getenv('ORG_ID')
+        openai_key = os.environ['OPENAI_KEY']
+        org_ID = os.environ['ORG_ID']
 
         client = OpenAI(organization=org_ID, api_key=openai_key)
-        assistant = client.beta.assistants.retrieve("asst_zAV8KhNBHBtBtnUGwMfKW1YS")
+        assistant = client.beta.assistants.retrieve("asst_kehD6QVaQfE8FFSf3Yfyaj0l")
         thread = client.beta.threads.create()
         message = client.beta.threads.messages.create(thread_id=thread.id, role="user", content=user_message)
         run = client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
@@ -72,20 +49,21 @@ if "messages" not in st.session_state:
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
-    with st.container():
-        st.write(message["content"], unsafe_allow_html=True)
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
 # React to user input
-user_input = st.text_input("Hal apa yang ingin ditanyakan?", key="input")
-if st.button("Send"):
+if user_input := st.chat_input("Hal apa yang ingin ditanyakan?"):
+    # Display user message in chat message container
+    st.chat_message("user").markdown(user_input)
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": user_input})
-    
+
     # Get responses from OpenAI
     responses = interact_with_openai(user_input)
     for response in responses:
+        # Display assistant response in chat message container
+        with st.chat_message("assistant"):
+            st.markdown(response)
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
-    
-    # Clear the input box after sending the message
-    st.session_state.input = ""
