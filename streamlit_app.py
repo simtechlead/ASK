@@ -3,19 +3,9 @@ import os
 import time
 from openai import OpenAI
 
-# Set up the page configuration with theme and title
-st.set_page_config(
-    page_title="ASK",
-    layout="wide",
-    initial_sidebar_state="expanded",
-    theme={
-        'primaryColor': '#E694FF',
-        'backgroundColor': '#FFFFFF',
-        'secondaryBackgroundColor': '#F0F2F6',
-        'textColor': '#000000',
-        'font': 'sans serif'
-    }
-)
+# Set up the page configuration and title
+st.set_page_config(page_title="ASK")
+st.title('Asisten Kuria GKPS Cikoko')
 
 # Add user guide
 st.info("""Masukkan pertanyaan di kolom chat""")
