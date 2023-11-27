@@ -3,6 +3,33 @@ import os
 import time
 from openai import OpenAI
 
+# Include the CSS styles in your Streamlit app
+st.markdown("""
+<style>
+/* Apply a background color to the whole page */
+body {
+    background-color: #ECE5DD; /* WhatsApp-like background color */
+}
+
+/* Style chat messages in Streamlit (You may need to inspect the actual Streamlit elements and adjust selectors accordingly) */
+.css-1aumxhk {
+    background-color: #DCF8C6; /* Light green background for messages */
+    border-radius: 18px; /* Rounded corners for chat bubbles */
+}
+
+/* Style for the chat message input box */
+.css-1cpxqw2 {
+    border-radius: 18px; /* Rounded corners for the input box */
+}
+
+/* Style for the send button */
+button {
+    border-radius: 50%; /* Rounded corners for buttons, resembling WhatsApp's send button */
+    background-color: #25D366; /* WhatsApp-like green color */
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Add this to the top of your script to include custom styles
 def local_css(file_name):
     with open(file_name) as f:
