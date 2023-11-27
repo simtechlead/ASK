@@ -5,7 +5,7 @@ from openai import OpenAI
 
 # Set up the page configuration and title
 st.set_page_config(page_title="ASK")
-st.title('Asisten Kuria GKPS Cikoko')
+st.title('Simulasi Asisten Kuria GKPS Cikoko')
 
 # Add user guide
 st.info("""Masukkan pertanyaan di kolom chat""")
