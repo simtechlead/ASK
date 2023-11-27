@@ -3,6 +3,11 @@ import os
 import time
 from openai import OpenAI
 
+# Set up the page configuration and title
+# This must be the first Streamlit function called
+st.set_page_config(page_title="ASK")
+st.title('Asisten Kuria GKPS Cikoko')
+
 # Include the CSS styles in your Streamlit app
 st.markdown("""
 <style>
@@ -12,15 +17,10 @@ body {
 }
 
 /* Style chat messages in Streamlit (You may need to inspect the actual Streamlit elements and adjust selectors accordingly) */
-.css-1aumxhk {
-    background-color: #DCF8C6; /* Light green background for messages */
-    border-radius: 18px; /* Rounded corners for chat bubbles */
-}
+/* Add your adjusted selectors and styles here */
 
 /* Style for the chat message input box */
-.css-1cpxqw2 {
-    border-radius: 18px; /* Rounded corners for the input box */
-}
+/* Add styles here if needed */
 
 /* Style for the send button */
 button {
@@ -30,12 +30,8 @@ button {
 </style>
 """, unsafe_allow_html=True)
 
-# Set up the page configuration and title
-st.set_page_config(page_title="ASK")
-st.title('Asisten Kuria GKPS Cikoko')
-
 # Add user guide
-st.info("""Masukkan pertanyaan di kolom chat""")
+st.info("Masukkan pertanyaan di kolom chat")
 
 # Function to interact with OpenAI API
 def interact_with_openai(user_message):
@@ -43,8 +39,8 @@ def interact_with_openai(user_message):
         # Prepend a directive to respond in Indonesian
         user_message = "Respond in Indonesian: " + user_message
         
-        openai_key = os.environ['OPENAI_KEY']
-        org_ID = os.environ['ORG_ID']
+        openai_key = os.getenv('OPENAI_KEY')
+        org_ID = os.getenv('ORG_ID')
 
         client = OpenAI(organization=org_ID, api_key=openai_key)
         assistant = client.beta.assistants.retrieve("asst_zAV8KhNBHBtBtnUGwMfKW1YS")
