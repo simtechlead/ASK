@@ -30,70 +30,6 @@ button {
 </style>
 """, unsafe_allow_html=True)
 
-# Add this to the top of your script to include custom styles
-def local_css(file_name):
-    with open(file_name) as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-local_css("style.css")  # Assuming you have a CSS file named 'style.css'
-
-/* Add this content to your style.css file */
-
-/* Apply WhatsApp color scheme */
-body {
-    background-color: #ECE5DD; /* WhatsApp background color */
-}
-
-/* Style chat messages */
-.chat-bubble {
-    position: relative;
-    background-color: #FFFFFF;
-    border-radius: 8px;
-    padding: 10px;
-    margin-bottom: 10px;
-}
-
-/* Style for user's messages */
-.chat-message.user {
-    background-color: #DCF8C6; /* WhatsApp sender bubble color */
-    margin-left: 20%;
-    text-align: right;
-}
-
-/* Style for assistant's messages */
-.chat-message.assistant {
-    background-color: #FFFFFF; /* WhatsApp receiver bubble color */
-    margin-right: 20%;
-}
-
-/* Style for chat input */
-input.stTextInput {
-    border-radius: 20px;
-    padding: 10px;
-}
-
-/* Adjust button style to match WhatsApp's send button */
-button {
-    border-radius: 50%;
-    height: 40px;
-    width: 40px;
-    padding: 0;
-    background-color: #25D366; /* WhatsApp primary color */
-}
-
-/* Icons, if necessary */
-.sent-icon {
-    display: inline-block;
-    background-image: url('sent-icon.png'); /* replace with your icon's path */
-    height: 16px;
-    width: 16px;
-}
-
-.delivered-icon {
-    /* similar setup for other icons */
-}
-
-
 # Set up the page configuration and title
 st.set_page_config(page_title="ASK")
 st.title('Asisten Kuria GKPS Cikoko')
@@ -140,21 +76,20 @@ if "messages" not in st.session_state:
 
 # Display chat messages from history on app rerun
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+    with st.container():
+        st.write(message["content"], unsafe_allow_html=True)
 
 # React to user input
-if user_input := st.chat_input("Hal apa yang ingin ditanyakan?"):
-    # Display user message in chat message container
-    st.chat_message("user").markdown(user_input)
+user_input = st.text_input("Hal apa yang ingin ditanyakan?", key="input")
+if st.button("Send"):
     # Add user message to chat history
     st.session_state.messages.append({"role": "user", "content": user_input})
-
+    
     # Get responses from OpenAI
     responses = interact_with_openai(user_input)
     for response in responses:
-        # Display assistant response in chat message container
-        with st.chat_message("assistant"):
-            st.markdown(response)
         # Add assistant response to chat history
         st.session_state.messages.append({"role": "assistant", "content": response})
+    
+    # Clear the input box after sending the message
+    st.session_state.input = ""
