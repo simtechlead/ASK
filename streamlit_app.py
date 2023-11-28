@@ -4,22 +4,32 @@ import time
 from openai import OpenAI
 import datetime
 import pytz
-import locale
+
+# Function to map English day names to Indonesian
+def map_day_to_indonesian(day):
+    mapping = {
+        "Monday": "Senin",
+        "Tuesday": "Selasa",
+        "Wednesday": "Rabu",
+        "Thursday": "Kamis",
+        "Friday": "Jumat",
+        "Saturday": "Sabtu",
+        "Sunday": "Minggu"
+    }
+    return mapping.get(day, "Unknown")
 
 # Set up the page configuration and title
 st.set_page_config(page_title="ASK")
 st.title('Simulasi Asisten Kuria GKPS Cikoko')
 
-# Set the locale to Indonesian
-locale.setlocale(locale.LC_TIME, 'id_ID.UTF-8')
-
 # Display the current date and day in Indonesian timezone
 tz = pytz.timezone('Asia/Jakarta')  # Set the timezone to Jakarta
 current_time = datetime.datetime.now(tz)  # Get the current date and time in the specified timezone
 current_date = current_time.strftime("%Y-%m-%d")
-current_day = current_time.strftime("%A")  # Get the current day of the week in Indonesian
+current_day_english = current_time.strftime("%A")  # Get the current day in English
+current_day_indonesian = map_day_to_indonesian(current_day_english)  # Translate to Indonesian
 
-st.write(f"Tanggal saat ini: {current_date}, Hari: {current_day}")  # Display the current date and day
+st.write(f"Tanggal saat ini: {current_date}, Hari: {current_day_indonesian}")  # Display the current date and day
 
 # Add user guide
 st.info("""Masukkan pertanyaan di kolom chat""")
