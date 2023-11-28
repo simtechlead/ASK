@@ -2,15 +2,17 @@ import streamlit as st
 import os
 import time
 from openai import OpenAI
-import datetime  # Import the datetime module
+import datetime
+import pytz  # Import the pytz module
 
 # Set up the page configuration and title
 st.set_page_config(page_title="ASK")
 st.title('Simulasi Asisten Kuria GKPS Cikoko')
 
-# Display the current date and time
-current_time = datetime.datetime.now()  # Get the current date and time
-st.write("Current date and time:", current_time.strftime("%Y-%m-%d %H:%M:%S"))  # Display it in a formatted string
+# Display the current date and time in Indonesian timezone
+tz = pytz.timezone('Asia/Jakarta')  # Set the timezone to Jakarta
+current_time = datetime.datetime.now(tz)  # Get the current date and time in the specified timezone
+st.write("Waktu saat ini di Indonesia (WIB):", current_time.strftime("%Y-%m-%d %H:%M:%S"))
 
 # Add user guide
 st.info("""Masukkan pertanyaan di kolom chat""")
