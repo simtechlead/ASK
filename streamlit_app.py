@@ -2,10 +2,15 @@ import streamlit as st
 import os
 import time
 from openai import OpenAI
+import datetime  # Import the datetime module
 
 # Set up the page configuration and title
 st.set_page_config(page_title="ASK")
 st.title('Simulasi Asisten Kuria GKPS Cikoko')
+
+# Display the current date and time
+current_time = datetime.datetime.now()  # Get the current date and time
+st.write("Current date and time:", current_time.strftime("%Y-%m-%d %H:%M:%S"))  # Display it in a formatted string
 
 # Add user guide
 st.info("""Masukkan pertanyaan di kolom chat""")
