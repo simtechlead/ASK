@@ -1,23 +1,21 @@
 import streamlit as st
 import datetime
 import os
-import time  # Import the time module
+import time
 from openai import OpenAI
 
-# Function to calculate the date of the next Sunday
-def get_next_sunday():
-    today = datetime.date.today()
-    days_until_sunday = 6 - today.weekday()
-    if days_until_sunday <= 0:  # today is Sunday
-        days_until_sunday += 7
-    next_sunday = today + datetime.timedelta(days=days_until_sunday)
-    return next_sunday
+# Function to get the current date and time for the silent prompt
+def get_current_datetime():
+    return datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 # Function to interact with OpenAI API
 def interact_with_openai(user_message):
-    # Include the date of the next Sunday in the user message
-    next_sunday_date = get_next_sunday()
-    user_message = f"The date for next Sunday is {next_sunday_date}. {user_message}"
+    # Create a silent prompt with the current date and time
+    current_datetime = get_current_datetime()
+    silent_prompt = f"[Current date and time: {current_datetime}]"
+
+    # Combine the silent prompt with the user message
+    combined_message = f"{silent_prompt} {user_message}"
 
     try:
         openai_key = os.environ['OPENAI_KEY']
@@ -26,7 +24,7 @@ def interact_with_openai(user_message):
         client = OpenAI(organization=org_ID, api_key=openai_key)
         assistant = client.beta.assistants.retrieve("asst_zAV8KhNBHBtBtnUGwMfKW1YS")
         thread = client.beta.threads.create()
-        message = client.beta.threads.messages.create(thread_id=thread.id, role="user", content=user_message)
+        message = client.beta.threads.messages.create(thread_id=thread.id, role="user", content=combined_message)
         run = client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
 
         while True:
