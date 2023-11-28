@@ -1,13 +1,14 @@
 import streamlit as st
 import datetime
 import os
+import time  # Import the time module
 from openai import OpenAI
 
 # Function to calculate the date of the next Sunday
 def get_next_sunday():
     today = datetime.date.today()
     days_until_sunday = 6 - today.weekday()
-    if days_until_sunday <= 0: # today is Sunday
+    if days_until_sunday <= 0:  # today is Sunday
         days_until_sunday += 7
     next_sunday = today + datetime.timedelta(days=days_until_sunday)
     return next_sunday
