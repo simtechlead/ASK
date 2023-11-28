@@ -3,16 +3,18 @@ import os
 import time
 from openai import OpenAI
 import datetime
-import pytz  # Import the pytz module
+import pytz  # Import pytz for timezone handling
 
 # Set up the page configuration and title
 st.set_page_config(page_title="ASK")
 st.title('Simulasi Asisten Kuria GKPS Cikoko')
 
-# Display the current date and time in Indonesian timezone
+# Display the current day in Indonesian timezone
 tz = pytz.timezone('Asia/Jakarta')  # Set the timezone to Jakarta
 current_time = datetime.datetime.now(tz)  # Get the current date and time in the specified timezone
-st.write("Waktu saat ini di Indonesia (WIB):", current_time.strftime("%Y-%m-%d %H:%M:%S"))
+current_day = current_time.strftime("%A")  # Get the current day of the week
+
+st.write(f"Hari ini adalah: {current_day}")  # Display the current day
 
 # Add user guide
 st.info("""Masukkan pertanyaan di kolom chat""")
