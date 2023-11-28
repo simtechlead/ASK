@@ -1,21 +1,24 @@
 import streamlit as st
+import datetime
 import os
-import time
 from openai import OpenAI
 
-# Set up the page configuration and title
-st.set_page_config(page_title="ASK")
-st.title('Simulasi Asisten Kuria GKPS Cikoko')
-
-# Add user guide
-st.info("""Masukkan pertanyaan di kolom chat""")
+# Function to calculate the date of the next Sunday
+def get_next_sunday():
+    today = datetime.date.today()
+    days_until_sunday = 6 - today.weekday()
+    if days_until_sunday <= 0: # today is Sunday
+        days_until_sunday += 7
+    next_sunday = today + datetime.timedelta(days=days_until_sunday)
+    return next_sunday
 
 # Function to interact with OpenAI API
 def interact_with_openai(user_message):
+    # Include the date of the next Sunday in the user message
+    next_sunday_date = get_next_sunday()
+    user_message = f"The date for next Sunday is {next_sunday_date}. {user_message}"
+
     try:
-        # Prepend a directive to respond in Indonesian
-        user_message = "Respond in Indonesian: " + user_message
-        
         openai_key = os.environ['OPENAI_KEY']
         org_ID = os.environ['ORG_ID']
 
@@ -42,6 +45,13 @@ def interact_with_openai(user_message):
     except Exception as e:
         st.error(f"Error: {e}")
         return []
+
+# Streamlit app setup
+st.set_page_config(page_title="ASK")
+st.title('Simulasi Asisten Kuria GKPS Cikoko')
+
+# Add user guide
+st.info("""Masukkan pertanyaan di kolom chat""")
 
 # Initialize chat history
 if "messages" not in st.session_state:
