@@ -20,7 +20,7 @@ def interact_with_openai(user_message):
         org_ID = os.environ['ORG_ID']
 
         client = OpenAI(organization=org_ID, api_key=openai_key)
-        assistant = client.beta.assistants.retrieve("asst_zAV8KhNBHBtBtnUGwMfKW1YS")
+        assistant = client.beta.assistants.retrieve("asst_txRn9IeEbY6u1zXO1AARoqBL")
         thread = client.beta.threads.create()
         message = client.beta.threads.messages.create(thread_id=thread.id, role="user", content=user_message)
         run = client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
