@@ -15,7 +15,7 @@ def interact_with_openai(user_message):
     try:
         # Prepend a directive to respond in Indonesian
         user_message = "Respond in Indonesian: " + user_message
-        
+
         openai_key = os.environ['OPENAI_KEY']
         org_ID = os.environ['ORG_ID']
 
@@ -25,12 +25,20 @@ def interact_with_openai(user_message):
         message = client.beta.threads.messages.create(thread_id=thread.id, role="user", content=user_message)
         run = client.beta.threads.runs.create(thread_id=thread.id, assistant_id=assistant.id)
 
+        # Show "Assistant is typing..." message
+        typing_message = {"role": "assistant", "content": "Assistant is typing..."}
+        st.session_state.messages.append(typing_message)
+        st.experimental_rerun()  # Rerun to update the UI
+
         while True:
             run_status = client.beta.threads.runs.retrieve(thread_id=thread.id, run_id=run.id)
             if run_status.status == 'completed':
                 break
             else:
                 time.sleep(1)
+
+        # Remove the "Assistant is typing..." message
+        st.session_state.messages.remove(typing_message)
 
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         responses = []
